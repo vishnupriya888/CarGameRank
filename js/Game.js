@@ -38,12 +38,14 @@ class Game {
     car4 = createSprite(700,200);
     car4.addImage("car4",car4_img);
     cars = [car1, car2, car3, car4];
+    passedFinish= false;
   }
 
   play(){
     form.hide();
     
     Player.getPlayerInfo();
+    player.getFinishedPlayers();
     
     if(allPlayers !== undefined){
       background(rgb(198,135,103));
@@ -82,23 +84,54 @@ class Game {
        
         //textSize(15);
         //text(allPlayers[plr].name + ": " + allPlayers[plr].distance, 120,display_position)
+        textAlign(CENTER);
+                textSize(20);
+                text(allPlayers[plr].name, cars[index - 1].x, cars[index - 1].y + 75);
       }
 
     }
 
-    if(keyIsDown(UP_ARROW) && player.index !== null){
+    if(keyIsDown(UP_ARROW) && player.index !== null && passedFinish!==true){
       player.distance +=10
       player.update();
     }
 
-    if(player.distance > 3860){
-      gameState = 2;
+    if(player.distance > 460 && passedFinish===false){
+      Player.updateFinishedPlayers();
+      player.rank= finishedPlayers;
+      player.update();
+      passedFinish= true;
+     
     }
    
     drawSprites();
   }
 
-  end(){
-    console.log("Game Ended");
+  displayRanks(){
+    camera.position.x =0;
+    camera.position.y = 0;
+     
+    imageMode(CENTER);
+    Player.getPlayerInfo();
+
+    image(bronze_img, displayWidth/-4, -100 + displayHeight/9, 200, 240);
+    image(silver_img, displayWidth/4, -100 + displayHeight/10, 225, 270);
+    image(gold_img, 0, -100, 250, 300);
+
+    textAlign(CENTER);
+    textSize(50);
+    for(var plr in allPlayers){
+      if(allPlayers[plr].rank === 1){
+        text("1st :  "+allPlayers[plr].name,0,85);
+      }
+      else if(allPlayers[plr].rank === 2){
+        text("2nd: " + allPlayers[plr].name, displayWidth/4, displayHeight/9 + 73);
+      }else if(allPlayers[plr].rank === 3){
+        text("3rd: " + allPlayers[plr].name, displayWidth/-4, displayHeight/10 + 76);
+    }else{
+        textSize(30);
+        text("Honorable Mention: " + allPlayers[plr].name, 0, 225);
+    }
+    }
   }
 }
